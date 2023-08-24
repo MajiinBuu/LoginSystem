@@ -1,0 +1,57 @@
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+body {
+    background-color: #272727;
+    font-family: 'Quicksand', serif;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: 0;
+    padding: 1rem;
+}
+
+form {
+    margin: 0 auto;
+    margin-top: 25%;
+    width: 250px;
+}
+
+input {
+    height: 30px;
+}
+
+#submit {
+    width: 49%;
+}
+#regisrer {
+    width: 49%;
+}
+
+#submit:hover {
+    background-color: rgba(245, 10, 10, 0.932);
+}
+
+.loginForm {
+    display: flex;
+    flex-direction: column;
+}
+
+.loggedText {
+    display: flex;
+    margin: 0 auto;
+    margin-top: 20%;
+    color: white;
+    width: 300px;
+}
+
+/* ========================== register ========================== */
+.register {
+    display: flex;
+    color: white;
+
+    margin: 0 auto;
+    margin-top: 8%;
+    width: 300px;
+}
