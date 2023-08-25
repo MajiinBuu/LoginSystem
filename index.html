@@ -10,6 +10,7 @@
 </head>
 
 <body>
+
     <div class="container">
 
         <form class="loginForm">
@@ -61,18 +62,27 @@
 
                 case "Register":
                     {
-                        let canRegister = checkUser();
+                        let canRegister = false;
 
-                        console.log("can register = " + canRegister);
+                        checkData().then(register => {
+                            canRegister = register;
+                            console.log("can register = " + canRegister);
 
-                        if (canRegister) {
-                            let isLogged = insertData();
+                            if (canRegister) {
+                                let isLogged = insertData();
 
-                            if (isLogged) {
-                                //RedirectionJavascript();
+                                if (isLogged)
+                                    RedirectionJavascript();
                             }
-                            break;
-                        }
+                            else {
+                                alert("email already used");
+                            }
+
+                        }).catch(err => {
+                            console.log(err);
+                        });
+
+                        break;
                     }
             }
         });
@@ -107,8 +117,9 @@
         }
 
         function RedirectionJavascript() {
-            //window.location.href = "./logged.html";
+            clearInput();
             location.replace("./logged.html");
+            //window.location.href = "./logged.html";
         }
 
 
@@ -119,8 +130,6 @@
         function insertData() {
 
             let logged = false;
-            username = getUsername();
-            email = getUsermail();
 
             try {
                 set(ref(db, 'User/' + userID), {
@@ -133,7 +142,6 @@
                 logged = true;
 
                 userID++;
-                //clearInput();
             }
             catch (error) {
                 console.log(error);
@@ -142,41 +150,43 @@
             return logged;
         }
 
-        function checkUser() {
+        function checkData() {
             const dbRef = ref(db);
 
             email = getUsermail();
             username = getUsername();
+
             let registrationAvailible = true;
 
-            let done = get(child(dbRef, "User/")).then((snapshot) => {
-                snapshot.forEach(childSnapshot => {
+            // return promise to allow to wait the end of the function
+            return new Promise((resolve, reject) => {
+                get(child(dbRef, "User/")).then((snapshot) => {
 
-                    // stop the foreach is registration is unavailible
-                    if (registrationAvailible === false)
-                        return;
+                    snapshot.forEach(childSnapshot => {
 
-                    const data = childSnapshot.val();
+                        // stop the foreach if registration is unavailible
+                        if (registrationAvailible === false)
+                            return;
 
-                    if (data.Email === email) {
-                        console.log("Email already used");
-                        registrationAvailible = false;
-                    }
-                    else {
-                        console.log("Registration availible");
-                    }
-                })
-            }).catch((error) => {
-                console.log(error);
-            });
+                        // get data of each snapshot
+                        const data = childSnapshot.val();
 
-            // execute this only after the end of the foreach
-            done.then(() => {
-                return registrationAvailible;
-            });
-            
+                        // check if email is already used
+                        if (data.Email === email)
+                            registrationAvailible = false;
+                    })
+                    // return the value
+                    resolve(registrationAvailible);
+
+                }).catch((error) => {
+                    console.log(error);
+                });
+            }
+            )
         }
+
     </script>
+
 </body>
 
 </html>
