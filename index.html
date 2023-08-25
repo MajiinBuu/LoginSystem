@@ -56,7 +56,22 @@
                 case "Login":
                     {
                         // TODO check value and login if it's ok
-                        alert("not availible yet");
+                        let canLogin = false;
+
+                        checkLogin().then(login => {
+                            canLogin = login;
+
+                            if (canLogin) {
+                                RedirectionJavascript();
+                            }
+                            else {
+                                alert("Wrong value");
+                            }
+
+                        }).catch(err => {
+                            console.log(err);
+                        });
+
                         break;
                     }
 
@@ -66,7 +81,6 @@
 
                         checkData().then(register => {
                             canRegister = register;
-                            console.log("can register = " + canRegister);
 
                             if (canRegister) {
                                 let isLogged = insertData();
@@ -156,7 +170,7 @@
             email = getUsermail();
             username = getUsername();
 
-            let registrationAvailible = true;
+            let loginAvailible = true;
 
             // return promise to allow to wait the end of the function
             return new Promise((resolve, reject) => {
@@ -165,7 +179,7 @@
                     snapshot.forEach(childSnapshot => {
 
                         // stop the foreach if registration is unavailible
-                        if (registrationAvailible === false)
+                        if (loginAvailible === false)
                             return;
 
                         // get data of each snapshot
@@ -173,10 +187,47 @@
 
                         // check if email is already used
                         if (data.Email === email)
-                            registrationAvailible = false;
+                            loginAvailible = false;
                     })
                     // return the value
-                    resolve(registrationAvailible);
+                    resolve(loginAvailible);
+
+                }).catch((error) => {
+                    console.log(error);
+                });
+            }
+            )
+        }
+
+
+        function checkLogin() {
+            const dbRef = ref(db);
+
+            email = getUsermail();
+            username = getUsername();
+
+            let loginAvailible = false;
+
+            // return promise to allow to wait the end of the function
+            return new Promise((resolve, reject) => {
+                get(child(dbRef, "User/")).then((snapshot) => {
+
+                    snapshot.forEach(childSnapshot => {
+
+                        // stop the foreach when first occurence is availible
+                        if (loginAvailible === true)
+                            return;
+
+                        // get data of each snapshot
+                        const data = childSnapshot.val();
+
+                        // check if email is already used
+                        if (data.Email === email && data.Name === username)
+                            loginAvailible = true;
+
+                    })
+                    // return the value
+                    resolve(loginAvailible);
 
                 }).catch((error) => {
                     console.log(error);
