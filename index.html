@@ -11,17 +11,19 @@
 
 <body>
 
-    <div class="container">
-
-        <form class="loginForm">
-            <input type="text" id="username" placeholder="Username">
-            <input type="email" id="email" placeholder="Email">
-            <div id="inputType">
+    <div class="login-box">
+        <h2>Login & Register</h2>
+        <form>
+            <div class="user-box">
+                <!-- <input type="text" id="username" placeholder="Username" required=""> -->
+                <input type="email" id="email" placeholder="Email" required="">
+                <input type="password" id="password" placeholder="Password" required="">
+            </div>
+            <div class="submitBtn">
                 <input type="submit" id="submit" value="Login">
                 <input type="submit" id="regisrer" value="Register">
             </div>
         </form>
-
     </div>
 
 
@@ -103,6 +105,7 @@
 
 
         // ===================================== GETTER =====================================
+        /*
         function getUsername() {
             const username = document.getElementById("username").value;
             if (username === "") {
@@ -112,6 +115,7 @@
             else
                 return username;
         }
+        */
 
         function getUsermail() {
             const email = document.getElementById("email").value;
@@ -123,11 +127,22 @@
                 return email;
         }
 
+        function getUserPassword() {
+            const password = document.getElementById("password").value;
+            if (password === "") {
+                alert("pleas fill in password field")
+                return;
+            }
+            else
+                return password;
+        }
+
 
         // ===================================== helper =====================================
         function clearInput() {
-            document.getElementById("username").value = "";
+            //document.getElementById("username").value = "";
             document.getElementById("email").value = "";
+            document.getElementById("password").value = "";
         }
 
         function RedirectionJavascript() {
@@ -145,8 +160,9 @@
             console.log(err);
         });
 
-        let username = "";
+        //let username = "";
         let email = "";
+        let password = "";
         // ===================================== DB FUNCTION =====================================
         function insertData() {
 
@@ -154,8 +170,9 @@
 
             try {
                 set(ref(db, 'User/' + userID), {
-                    Name: username,
-                    Email: email
+                    //Name: username,
+                    Email: email,
+                    Password: password
                 }).then(() => {
                     alert("date inserted succesfully");
                 });
@@ -173,8 +190,9 @@
 
         function checkData() {
 
+            //username = getUsername();
             email = getUsermail();
-            username = getUsername();
+            password = getUserPassword();
 
             let loginAvailible = true;
 
@@ -209,7 +227,7 @@
         function checkLogin() {
 
             email = getUsermail();
-            username = getUsername();
+            password = getUserPassword();
 
             let loginAvailible = false;
 
@@ -227,7 +245,7 @@
                         const data = childSnapshot.val();
 
                         // check if email and name match
-                        if (data.Email === email && data.Name === username)
+                        if (data.Email === email && data.Password === password)
                             loginAvailible = true;
 
                     })
