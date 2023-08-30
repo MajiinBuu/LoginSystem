@@ -11,21 +11,47 @@
 
 <body>
 
+    <div class="header">
+        <button type="button" id="loginRegister" onclick="displayFrom()">Change Form</button>
+    </div>
+
     <div class="login-box">
-        <h2>Login & Register</h2>
+        <h2 id="titleH2">Login</h2>
         <form>
             <div class="user-box">
-                <!-- <input type="text" id="username" placeholder="Username" required=""> -->
+                <input type="text" id="username" placeholder="Username" style="display: none;">
                 <input type="email" id="email" placeholder="Email" required="">
                 <input type="password" id="password" placeholder="Password" required="">
             </div>
             <div class="submitBtn">
                 <input type="submit" id="submit" value="Login">
-                <input type="submit" id="regisrer" value="Register">
+                <input type="submit" id="regisrer" value="Register" style="display: none;">
             </div>
         </form>
     </div>
 
+    <script>
+        function displayFrom() {
+            var value = ["submit", "regisrer", "username"];
+
+            for (let i = 0; i < value.length; i++) {
+                var x = document.getElementById(value[i]);
+                if (x.style.display === "none") {
+                    x.style.display = "block";
+                } else {
+                    x.style.display = "none";
+                }
+            }
+
+            var x = document.getElementById("titleH2");
+            if (x.textContent === "Login") {
+                x.textContent = "Register";
+            }
+            else if (x.textContent === "Register") {
+                x.textContent = "Login";
+            }
+        }
+    </script>
 
     <script type="module">
         // Import the functions you need from the SDKs you need
@@ -105,7 +131,6 @@
 
 
         // ===================================== GETTER =====================================
-        /*
         function getUsername() {
             const username = document.getElementById("username").value;
             if (username === "") {
@@ -115,7 +140,6 @@
             else
                 return username;
         }
-        */
 
         function getUsermail() {
             const email = document.getElementById("email").value;
@@ -140,7 +164,7 @@
 
         // ===================================== helper =====================================
         function clearInput() {
-            //document.getElementById("username").value = "";
+            document.getElementById("username").value = "";
             document.getElementById("email").value = "";
             document.getElementById("password").value = "";
         }
@@ -160,7 +184,7 @@
             console.log(err);
         });
 
-        //let username = "";
+        let username = "";
         let email = "";
         let password = "";
         // ===================================== DB FUNCTION =====================================
@@ -170,7 +194,7 @@
 
             try {
                 set(ref(db, 'User/' + userID), {
-                    //Name: username,
+                    Name: username,
                     Email: email,
                     Password: password
                 }).then(() => {
@@ -190,7 +214,7 @@
 
         function checkData() {
 
-            //username = getUsername();
+            username = getUsername();
             email = getUsermail();
             password = getUserPassword();
 
