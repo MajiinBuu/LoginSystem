@@ -3,28 +3,12 @@ html {
 }
 
 body {
-    margin: 0;
-    padding: 0;
     font-family: sans-serif;
     background: linear-gradient(#141e30, #243b55);
 }
 
-.login-box {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 400px;
-    padding: 40px;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, .5);
-    box-sizing: border-box;
-    box-shadow: 0 15px 25px rgba(0, 0, 0, .6);
-    border-radius: 10px;
-}
-
 .header {
-    position: absolute;
-    top: 15%;
+    margin-top: 9%;
     align-items: center;
     text-align: center;
     font-weight: 700;
@@ -33,7 +17,7 @@ body {
     width: 100%;
 }
 
-.header span {
+.header {
     margin-right: 22px;
     letter-spacing: 2px;
 }
@@ -54,14 +38,27 @@ body {
     text-align: center;
     text-shadow: rgba(0, 0, 0, 0.25) 0 3px 8px;
     transition: all .5s;
-    user-select: none;
     -webkit-user-select: none;
+    user-select: none;
     touch-action: manipulation;
 }
 
 #loginRegister:hover {
     box-shadow: rgba(80, 63, 205, 0.5) 0 1px 30px;
-  transition-duration: .1s;
+    transition-duration: .1s;
+}
+
+.login-box {
+    position: absolute;
+    top: 52%;
+    left: 50%;
+    width: 400px;
+    padding: 40px;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, .5);
+    box-sizing: border-box;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, .6);
+    border-radius: 10px;
 }
 
 .login-box h2 {
@@ -97,7 +94,7 @@ body {
     overflow: hidden;
     transition: .5s;
     margin-top: 40px;
-    letter-spacing: 4px
+    letter-spacing: 4px;
 }
 
 .login-box .user-box input:hover {
@@ -120,48 +117,10 @@ body {
         0 0 100px #03e9f4;
 }
 
-@keyframes btn-anim1 {
-    0% {
-        left: -100%;
-    }
-
-    50%,
-    100% {
-        left: 100%;
-    }
-}
-
-@keyframes btn-anim2 {
-    0% {
-        top: -100%;
-    }
-
-    50%,
-    100% {
-        top: 100%;
-    }
-}
-
-@keyframes btn-anim3 {
-    0% {
-        right: -100%;
-    }
-
-    50%,
-    100% {
-        right: 100%;
-    }
-}
-
-@keyframes btn-anim4 {
-    0% {
-        bottom: -100%;
-    }
-
-    50%,
-    100% {
-        bottom: 100%;
-    }
+.login-box .submitBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* ===================================== LOGGED PAGE ===================================== */

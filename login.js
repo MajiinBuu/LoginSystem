@@ -16,6 +16,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
+const dbRef = ref(db);
 
 
 // add event listener on form
@@ -27,25 +28,49 @@ document.querySelector('form').addEventListener("submit", e => {
     switch (submitter) {
         case "Login":
             {
-                // TODO check value and login if it's ok
-                alert("not availible yet");
+                let canLogin = false;
+
+                checkLogin().then(login => {
+                    canLogin = login;
+
+                    if (canLogin) {
+                        RedirectionJavascript();
+                    }
+                    else {
+                        alert("Wrong value");
+                    }
+
+                }).catch(err => {
+                    console.log(err);
+                });
+
                 break;
             }
 
         case "Register":
             {
-                let canRegister = checkUser();
+                let canRegister = false;
 
-                console.log("can register = " + canRegister);
+                checkData().then(register => {
+                    canRegister = register;
 
-                if (canRegister) {
-                    let isLogged = insertData();
+                    if (canRegister) {
+                        let isLogged = insertData();
 
-                    if (isLogged) {
-                        //RedirectionJavascript();
+                        if (isLogged)
+                            RedirectionJavascript();
+                        else
+                            alert("Sorry something going wrong");
                     }
-                    break;
-                }
+                    else {
+                        alert("email already used");
+                    }
+
+                }).catch(err => {
+                    console.log(err);
+                });
+
+                break;
             }
     }
 });
@@ -72,33 +97,54 @@ function getUsermail() {
         return email;
 }
 
+function getUserPassword() {
+    const password = document.getElementById("password").value;
+    if (password === "") {
+        alert("pleas fill in password field")
+        return;
+    }
+    else
+        return password;
+}
+
 
 // ===================================== helper =====================================
 function clearInput() {
     document.getElementById("username").value = "";
     document.getElementById("email").value = "";
+    document.getElementById("password").value = "";
 }
 
 function RedirectionJavascript() {
-    //window.location.href = "./logged.html";
+    clearInput();
     location.replace("./logged.html");
+    //window.location.href = "./logged.html";
 }
 
 
+// Loading ID
 let userID = 0;
+loadCountID().then(counterID => {
+    userID = counterID;
+}).catch(err => {
+    console.log(err);
+});
+
 let username = "";
 let email = "";
+let password = "";
+
+
 // ===================================== DB FUNCTION =====================================
 function insertData() {
 
     let logged = false;
-    username = getUsername();
-    email = getUsermail();
 
     try {
         set(ref(db, 'User/' + userID), {
             Name: username,
-            Email: email
+            Email: email,
+            Password: password
         }).then(() => {
             alert("date inserted succesfully");
         });
@@ -106,7 +152,6 @@ function insertData() {
         logged = true;
 
         userID++;
-        //clearInput();
     }
     catch (error) {
         console.log(error);
@@ -115,37 +160,114 @@ function insertData() {
     return logged;
 }
 
-function checkUser() {
-    const dbRef = ref(db);
+function checkData() {
+
+    username = getUsername();
+    email = getUsermail();
+    password = getUserPassword();
+
+    let loginAvailible = true;
+
+    // return promise to allow to wait the end of the function
+    return new Promise((resolve, reject) => {
+        get(child(dbRef, "User/")).then((snapshot) => {
+
+            snapshot.forEach(childSnapshot => {
+
+                // stop the foreach if registration is unavailible
+                if (loginAvailible === false)
+                    return;
+
+                // get data of each snapshot
+                const data = childSnapshot.val();
+
+                // check if email is already used
+                if (data.Email === email)
+                    loginAvailible = false;
+            })
+            // return the value
+            resolve(loginAvailible);
+
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+    )
+}
+
+
+function checkLogin() {
 
     email = getUsermail();
-    username = getUsername();
-    let registrationAvailible = true;
+    password = getUserPassword();
 
-    var done = get(child(dbRef, "User/")).then((snapshot) => {
-        snapshot.forEach(childSnapshot => {
+    let loginAvailible = false;
 
-            // stop the foreach is registration is unavailible
-            if (registrationAvailible === false)
-                return;
+    // return promise to allow to wait the end of the function
+    return new Promise((resolve, reject) => {
+        get(child(dbRef, "User/")).then((snapshot) => {
 
-            const data = childSnapshot.val();
+            snapshot.forEach(childSnapshot => {
 
-            if (data.Email === email) {
-                console.log("Email already used");
-                registrationAvailible = false;
-            }
-            else {
-                console.log("Registration availible");
-            }
-        })
-    }).catch((error) => {
-        console.log(error);
-    });
+                // stop the foreach when first occurence is availible
+                if (loginAvailible === true)
+                    return;
 
-    // execute this only after the end of the foreach
-    done.then(() => {
-        return registrationAvailible;
-    });
+                // get data of each snapshot
+                const data = childSnapshot.val();
 
+                // check if email and name match
+                if (data.Email === email && data.Password === password)
+                    loginAvailible = true;
+
+            })
+            // return the value
+            resolve(loginAvailible);
+
+        }).catch((error) => {
+            console.log(error);
+        });
+    })
+}
+
+
+function loadCountID() {
+
+    let counterID = 0;
+
+    // return promise to allow to wait the end of the function
+    return new Promise((resolve, reject) => {
+        get(child(dbRef, "User/")).then((snapshot) => {
+
+            snapshot.forEach(childSnapshot => {
+                counterID++;
+            })
+            // return the value
+            resolve(counterID);
+
+        }).catch((error) => {
+            console.log(error);
+        });
+    })
+}
+
+function displayFrom() {
+    var value = ["submit", "regisrer", "username"];
+
+    for (let i = 0; i < value.length; i++) {
+        var x = document.getElementById(value[i]);
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }
+
+    var x = document.getElementById("titleH2");
+    if (x.textContent === "Login") {
+        x.textContent = "Register";
+    }
+    else if (x.textContent === "Register") {
+        x.textContent = "Login";
+    }
 }
